@@ -3,6 +3,14 @@ const messageInput = document.getElementById('messageInput');
 const nicknameInput = document.getElementById('nickname');
 const sendButton = document.getElementById('sendBtn');
 
+curl -H 'Content-Type: application/json' -d '{"data":"{\"message\":\"hello world\"}","name":"my-event","channel":"my-channel"}' \ "https://api-eu.pusher.com/apps/2168515/events?"\
+"body_md5=2c99321eeba901356c4c7998da9be9e0&"\
+"auth_version=1.0&"\
+"auth_key=c27812947e996af42c04&"\
+"auth_timestamp=1781864012&"\
+"auth_signature=a3aa1808b7d5678e9ac3a81bbc003cf9b3296377c5aeb984c20fad5d9a1a09f6&"
+
+
 
 // Ключ для localStorage
 const STORAGE_KEY = 'icq-chat-messages';
