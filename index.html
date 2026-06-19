@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>💬 Общалка для девченок</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>💬 ОБЩАЛКА</h1>
+    <p>Добро пожаловать в нулевые. <br>Сеть — есть, настроение — тоже. Похоже на Аську</p>
+  </header>
+
+  <div class="chat-container">
+    <div class="messages" id="messages">
+      <!-- Сообщения загрузятся из localStorage или будут по умолчанию -->
+    </div>
+
+    <div class="input-area">
+      <input type="text" id="nickname" placeholder="Ваш ник" maxlength="15" />
+      <input type="text" id="messageInput" placeholder="Введите сообщение..." />
+      <button id="sendBtn">➤</button>
+	  <!-- ... внутри .input-area ... -->
+
+</div>
+
+<!-- 😄 Панель смайликов -->
+<div class="smiley-panel" style="
+  display: flex;
+  gap: 8px;
+  padding: 8px 15px;
+  background: rgba(255, 255, 255, 0.8);
+  border-top: 1px dashed #0099cc;
+  justify-content: center;
+">
+  <span class="smiley" data-smiley="🙂">🙂</span>
+  <span class="smiley" data-smiley="😂">😂</span>
+  <span class="smiley" data-smiley="❤️">❤️</span>
+  <span class="smiley" data-smiley="🔥">🔥</span>
+  <span class="smiley" data-smiley="💀">💀</span>
+  <span class="smiley" data-smiley="😎">😎</span>
+  <span class="smiley" data-smiley="🚀">🚀</span>
+  <span class="smiley" data-smiley="✨">✨</span>
+  <span class="smiley" data-smiley="❗">❗</span>
+  <span class="smiley" data-smiley="🤔">🤔</span>
+</div>
+<!-- Конец панели смайликов -->
+
+    </div>
+  </div>
+
+  <footer>
+    &copy; <script>document.write(new Date().getFullYear())</script> Общалка | Пишите, как будто модем ещё работает
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
