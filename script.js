@@ -64,6 +64,7 @@ function sendMessage() {
         messageInput.value = '';
         messageInput.focus();
     }
+	
 }
 
 // Обработчики событий
