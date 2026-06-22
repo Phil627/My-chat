@@ -22,42 +22,31 @@
       <input type="text" id="nickname" placeholder="Ваш ник" maxlength="15" />
       <input type="text" id="messageInput" placeholder="Введите сообщение..." />
       <button id="sendBtn">➤</button>
-	  <!-- ... внутри .input-area ... -->
-
-</div>
-
-<!-- 😄 Панель смайликов -->
-<div class="smiley-panel" style="
-  display: flex;
-  gap: 8px;
-  padding: 8px 15px;
-  background: rgba(255, 255, 255, 0.8);
-  border-top: 1px dashed #0099cc;
-  justify-content: center;
-">
-  <span class="smiley" data-smiley="🙂">🙂</span>
-  <span class="smiley" data-smiley="😂">😂</span>
-  <span class="smiley" data-smiley="❤️">❤️</span>
-  <span class="smiley" data-smiley="🔥">🔥</span>
-  <span class="smiley" data-smiley="💀">💀</span>
-  <span class="smiley" data-smiley="😎">😎</span>
-  <span class="smiley" data-smiley="🚀">🚀</span>
-  <span class="smiley" data-smiley="✨">✨</span>
-  <span class="smiley" data-smiley="❗">❗</span>
-  <span class="smiley" data-smiley="🤔">🤔</span>
-</div>
-<!-- Конец панели смайликов -->
-
     </div>
+
+    <!-- 😄 Панель смайликов -->
+    <div class="smiley-panel">
+      <span class="smiley" data-smiley="🙂">🙂</span>
+      <span class="smiley" data-smiley="😂">😂</span>
+      <span class="smiley" data-smiley="❤️">❤️</span>
+      <span class="smiley" data-smiley="🔥">🔥</span>
+      <span class="smiley" data-smiley="💀">💀</span>
+      <span class="smiley" data-smiley="😎">😎</span>
+      <span class="smiley" data-smiley="🚀">🚀</span>
+      <span class="smiley" data-smiley="✨">✨</span>
+      <span class="smiley" data-smiley="❗">❗</span>
+      <span class="smiley" data-smiley="🤔">🤔</span>
+    </div>
+    <!-- Конец панели смайликов -->
   </div>
 
   <footer>
     &copy; <script>document.write(new Date().getFullYear())</script> Общалка | Пишите, как будто модем ещё работает
   </footer>
 
-<!-- Подключаем Pusher -->
-<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-<script src="script.js"></script>
+  <!-- Подключаем Pusher -->
+  <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
   <script src="script.js"></script>
+  
 </body>
 </html>
