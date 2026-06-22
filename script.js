@@ -4,10 +4,6 @@ const pusher = new Pusher('373931c2b8d081fd1db7', {
 });
 
 const channel = pusher.subscribe('My-chat');
-channel.bind('pusher:subscription_succeeded', () => {
-  console.log('✅ Подписка на My-chat успешна');
-});
-
 
 pusher.connection.bind('connected', () => {
   console.log('🟢 Pusher: подключён');
@@ -21,9 +17,20 @@ pusher.connection.bind('error', (err) => {
   console.error('❌ Ошибка Pusher:', err);
 });
 
+pusher.connection.bind('unavailable', () => {
+  console.log('📡 Pusher недоступен. Попробую переподключиться...');
+  setTimeout(() => {
+    pusher.connect();
+  }, 3000);
+});
 
+pusher.connection.bind('failed', () => {
+  console.error('❌ Pusher: подключение не удалось. Проверь интернет или настройки');
+});
 
-// ==========================
+channel.bind('pusher:subscription_succeeded', () => {
+  console.log('✅ Подписка на My-chat успешна');
+});
 
 // Получаем элементы
 const messagesContainer = document.getElementById('messages');
@@ -34,7 +41,9 @@ const smileyPanel = document.querySelectorAll('.smiley');
 const typingIndicator = document.getElementById('typingIndicator');
 
 // Генерим уникальный ID сессии
-const sessionId = Date.now().toString();
+const sessionId = localStorage.getItem('sessionId') || Date.now().toString() + '-' + Math.random().toString(36).substr(2, 5);
+localStorage.setItem('sessionId', sessionId);
+
 
 // Формат времени: ЧЧ:ММ
 function getCurrentTime() {
