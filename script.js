@@ -1,9 +1,21 @@
-// Получаем элементы
+// === ПОДКЛЮЧЕНИЕ PUSHER ===
+const pusher = new Pusher('373931c2b8d081fd1db7', {
+  cluster: 'eu',
+
+});
+
+const channel = pusher.subscribe('presence-chat-channel');
+// ==========================
+
+// Получаем элементы (ТОЛЬКО ОДИН РАЗ!)
 const messagesContainer = document.getElementById('messages');
 const messageInput = document.getElementById('messageInput');
 const nicknameInput = document.getElementById('nickname');
 const sendButton = document.getElementById('sendBtn');
 const smileyPanel = document.querySelectorAll('.smiley');
+
+// Генерим уникальный ID сессии
+const sessionId = Date.now().toString();
 
 // Загружаем сообщения из localStorage
 function loadMessages() {
@@ -11,23 +23,17 @@ function loadMessages() {
     const currentNickname = nicknameInput.value.trim() || 'Гость';
 
     savedMessages.forEach(msg => {
-        const isOwn = msg.isOwn || (msg.nickname === currentNickname);
-        addMessageToDOM(msg.nickname, msg.text, isOwn, false); // не сохраняем повторно
+        const isOwn = msg.sessionId === sessionId;
+        addMessageToDOM(msg.nickname, msg.text, isOwn);
     });
 }
 
 // Добавляем сообщение в DOM
-function addMessageToDOM(nickname, text, isOwn = false, save = true) {
+function addMessageToDOM(nickname, text, isOwn = false) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('message');
+    messageElement.classList.add(isOwn ? 'my-message' : 'other-message');
 
-    if (isOwn) {
-        messageElement.classList.add('my-message');
-    } else {
-        messageElement.classList.add('other-message');
-    }
-
-    // Заголовок с ником
     const header = document.createElement('span');
     header.classList.add('message-header');
     header.textContent = nickname || 'Гость';
@@ -45,13 +51,6 @@ function addMessageToDOM(nickname, text, isOwn = false, save = true) {
 
     messagesContainer.appendChild(messageElement);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-    // Сохраняем в localStorage
-    if (save) {
-        const messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
-        messages.push({ nickname, text, isOwn });
-        localStorage.setItem('chatMessages', JSON.stringify(messages));
-    }
 }
 
 // Отправка сообщения
@@ -60,12 +59,39 @@ function sendMessage() {
     const message = messageInput.value.trim();
 
     if (message) {
-        addMessageToDOM(nickname, message, true); // это наше сообщение
+        const msgData = {
+            nickname,
+            text: message,
+            sessionId
+        };
+
+        // Отправляем через Pusher
+        channel.trigger('client-message', msgData);
+
+        // Добавляем локально
+        addMessageToDOM(nickname, message, true);
+
+        // Сохраняем в localStorage
+        const messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+        messages.push(msgData);
+        localStorage.setItem('chatMessages', JSON.stringify(messages));
+
+        // Очищаем поле
         messageInput.value = '';
         messageInput.focus();
     }
-	
 }
+
+// Получаем сообщения от других пользователей
+channel.bind('client-message', function(data) {
+    if (data.sessionId === sessionId) return;
+
+    addMessageToDOM(data.nickname, data.text, false);
+
+    const messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+    messages.push(data);
+    localStorage.setItem('chatMessages', JSON.stringify(messages));
+});
 
 // Обработчики событий
 sendButton.addEventListener('click', sendMessage);
@@ -81,13 +107,9 @@ smileyPanel.forEach(smiley => {
     });
 });
 
-// Сохраняем ник при изменении (чтобы определить "свои" сообщения)
-nicknameInput.addEventListener('change', () => {
-    loadMessages(); // перезагружаем с новым ником
-});
-nicknameInput.addEventListener('blur', () => {
-    loadMessages();
-});
+// Перезагрузка при смене ника
+nicknameInput.addEventListener('change', loadMessages);
+nicknameInput.addEventListener('blur', loadMessages);
 
 // Загружаем сообщения при старте
 loadMessages();
