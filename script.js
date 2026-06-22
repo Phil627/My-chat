@@ -1,127 +1,92 @@
-const messagesDiv = document.getElementById('messages');
+// Получаем элементы
+const messagesContainer = document.getElementById('messages');
 const messageInput = document.getElementById('messageInput');
 const nicknameInput = document.getElementById('nickname');
 const sendButton = document.getElementById('sendBtn');
-
-curl -H 'Content-Type: application/json' -d '{"data":"{\"message\":\"hello world\"}","name":"my-event","channel":"my-channel"}' \ "https://api-eu.pusher.com/apps/2168515/events?"\
-"body_md5=2c99321eeba901356c4c7998da9be9e0&"\
-"auth_version=1.0&"\
-"auth_key=c27812947e996af42c04&"\
-"auth_timestamp=1781864012&"\
-"auth_signature=a3aa1808b7d5678e9ac3a81bbc003cf9b3296377c5aeb984c20fad5d9a1a09f6&"
-
-
-
-// Ключ для localStorage
-const STORAGE_KEY = 'icq-chat-messages';
-
-
-
-// Получаем время
-function getCurrentTime() {
-  const now = new Date();
-  return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-}
+const smileyPanel = document.querySelectorAll('.smiley');
 
 // Загружаем сообщения из localStorage
 function loadMessages() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  const messages = saved ? JSON.parse(saved) : getDefaultMessages();
-  messages.forEach(msg => addMessageToDOM(msg.nickname, msg.text, msg.isMy));
-}
+    const savedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+    const currentNickname = nicknameInput.value.trim() || 'Гость';
 
-// Сохраняем все сообщения
-function saveMessages() {
-  const messageElements = messagesDiv.querySelectorAll('.message');
-  const messages = [];
-
-  messageElements.forEach(el => {
-    const header = el.querySelector('.message-header');
-    const nickname = header ? header.querySelector('span:first-child').textContent : 'Аноним';
-    const text = el.querySelector('.message-content').textContent;
-    const isMy = el.classList.contains('my-message');
-    messages.push({ nickname, text, isMy });
-  });
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    savedMessages.forEach(msg => {
+        const isOwn = msg.isOwn || (msg.nickname === currentNickname);
+        addMessageToDOM(msg.nickname, msg.text, isOwn, false); // не сохраняем повторно
+    });
 }
 
 // Добавляем сообщение в DOM
-function addMessageToDOM(nickname, text, isMy = true) {
-  const messageElement = document.createElement('div');
-  messageElement.className = 'message ' + (isMy ? 'my-message' : 'other-message');
+function addMessageToDOM(nickname, text, isOwn = false, save = true) {
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message');
 
-  messageElement.innerHTML = `
-    <div class="message-header">
-      <span>${nickname}</span>
-      <span>${getCurrentTime()}</span>
-    </div>
-    <div class="message-content">${text}</div>
-  `;
+    if (isOwn) {
+        messageElement.classList.add('my-message');
+    } else {
+        messageElement.classList.add('other-message');
+    }
 
-  messagesDiv.appendChild(messageElement);
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    // Заголовок с ником
+    const header = document.createElement('span');
+    header.classList.add('message-header');
+    header.textContent = nickname || 'Гость';
+
+    const textNode = document.createTextNode(': ');
+    const content = document.createElement('span');
+    content.innerHTML = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+    messageElement.appendChild(header);
+    messageElement.appendChild(textNode);
+    messageElement.appendChild(content);
+
+    messagesContainer.appendChild(messageElement);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    // Сохраняем в localStorage
+    if (save) {
+        const messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+        messages.push({ nickname, text, isOwn });
+        localStorage.setItem('chatMessages', JSON.stringify(messages));
+    }
 }
 
 // Отправка сообщения
 function sendMessage() {
-  const text = messageInput.value.trim();
-  const nickname = nicknameInput.value.trim() || 'Аноним';
+    const nickname = nicknameInput.value.trim() || 'Гость';
+    const message = messageInput.value.trim();
 
-  if (text === '') return;
-
-  // 🔁 Автозамена текстовых смайлов
-  const withEmojis = text
-    .replace(/:\)/g, '🙂')
-    .replace(/:\(/g, '🙁')
-    .replace(/:D/g, '😂')
-    .replace(/<3/g, '❤️')
-    .replace(/:\|/g, '😐')
-    .replace(/;\)/g, '😉');
-
-  addMessageToDOM(nickname, withEmojis, true);
-  saveMessages();
-  messageInput.value = '';
+    if (message) {
+        addMessageToDOM(nickname, message, true); // это наше сообщение
+        messageInput.value = '';
+        messageInput.focus();
+    }
 }
 
-
-
-
-// Сообщения по умолчанию
-function getDefaultMessages() {
-  return [
-    { nickname: 'Система', text: 'Добро пожаловать в ICQ-общалку Нажмите Enter, чтобы отправить.', isMy: false },
-    { nickname: 'Гость92', text: 'Привет Это реально как в 2005 году 😂', isMy: false }
-  ];
-}
-
-// Обработчики
+// Обработчики событий
 sendButton.addEventListener('click', sendMessage);
 messageInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') sendMessage();
+    if (e.key === 'Enter') sendMessage();
 });
 
-// Загружаем при старте
-window.addEventListener('load', () => {
-  loadMessages();
-
-  // Приветствие (только если чат пуст)
-  setTimeout(() => {
-    if (messagesDiv.children.length === 0) {
-      addMessageToDOM('ICQ Бот', `Привет, ${nicknameInput.value || 'Гость'} Добро пожаловать в ретро-чат 🖥️`, false);
-      saveMessages();
-    }
-  }, 500);
-});
-// 😄 Вставка смайликов
-document.querySelectorAll('.smiley').forEach(smiley => {
-  smiley.addEventListener('click', () => {
-    const symbol = smiley.getAttribute('data-smiley');
-    messageInput.value += symbol;
-    messageInput.focus(); // курсор остаётся в поле
-  });
+// Вставка смайликов
+smileyPanel.forEach(smiley => {
+    smiley.addEventListener('click', () => {
+        messageInput.value += smiley.getAttribute('data-smiley');
+        messageInput.focus();
+    });
 });
 
+// Сохраняем ник при изменении (чтобы определить "свои" сообщения)
+nicknameInput.addEventListener('change', () => {
+    loadMessages(); // перезагружаем с новым ником
+});
+nicknameInput.addEventListener('blur', () => {
+    loadMessages();
+});
 
-// Автосохранение (на всякий случай)
-window.addEventListener('beforeunload', saveMessages);
+// Загружаем сообщения при старте
+loadMessages();
