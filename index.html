@@ -2,51 +2,28 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>💬 Общалка для девченок</title>
+  <title>Общалка из 2000-х</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 </head>
 <body>
-
-  <header>
-    <h1>💬 ОБЩАЛКА</h1>
-    <p>Добро пожаловать в нулевые. <br>Сеть — есть, настроение — тоже. Похоже на Аську</p>
-  </header>
-
   <div class="chat-container">
-    <div class="messages" id="messages">
-      <!-- Сообщения загрузятся из localStorage или будут по умолчанию -->
-    </div>
-
+    <h1>💬 Общалка</h1>
+    <input type="text" id="nickname" placeholder="Твой ник" value="Гость" />
+    <div class="messages" id="messages"></div>
     <div class="input-area">
-      <input type="text" id="nickname" placeholder="Ваш ник" maxlength="15" />
-      <input type="text" id="messageInput" placeholder="Введите сообщение..." />
-      <button id="sendBtn">➤</button>
+      <input type="text" id="messageInput" placeholder="Напиши сообщение..." />
+      <button id="sendBtn">🚀</button>
     </div>
-
-    <!-- 😄 Панель смайликов -->
-    <div class="smiley-panel">
+    <div class="smileys">
       <span class="smiley" data-smiley="🙂">🙂</span>
       <span class="smiley" data-smiley="😂">😂</span>
       <span class="smiley" data-smiley="❤️">❤️</span>
       <span class="smiley" data-smiley="🔥">🔥</span>
-      <span class="smiley" data-smiley="💀">💀</span>
-      <span class="smiley" data-smiley="😎">😎</span>
-      <span class="smiley" data-smiley="🚀">🚀</span>
       <span class="smiley" data-smiley="✨">✨</span>
-      <span class="smiley" data-smiley="❗">❗</span>
-      <span class="smiley" data-smiley="🤔">🤔</span>
     </div>
-    <!-- Конец панели смайликов -->
+    <div id="typingIndicator" style="color: #0099cc; font-size: 0.8em; margin: 10px 0; display: none;"></div>
   </div>
-
-  <footer>
-    &copy; <script>document.write(new Date().getFullYear())</script> Общалка | Пишите, как будто модем ещё работает
-  </footer>
-
-  <!-- Подключаем Pusher -->
-  <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
   <script src="script.js"></script>
-  
 </body>
 </html>
