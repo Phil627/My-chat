@@ -3,9 +3,9 @@ const pusher = new Pusher('373931c2b8d081fd1db7', {
   cluster: 'eu'
 });
 
-const channel = pusher.subscribe('public-chat');
+const channel = pusher.subscribe('My-chat');
 channel.bind('pusher:subscription_succeeded', () => {
-  console.log('✅ Подписка на public-chat успешна');
+  console.log('✅ Подписка на My-chat успешна');
 });
 
 
