@@ -4,6 +4,24 @@ const pusher = new Pusher('373931c2b8d081fd1db7', {
 });
 
 const channel = pusher.subscribe('public-chat');
+channel.bind('pusher:subscription_succeeded', () => {
+  console.log('✅ Подписка на public-chat успешна');
+});
+
+
+pusher.connection.bind('connected', () => {
+  console.log('🟢 Pusher: подключён');
+});
+
+pusher.connection.bind('disconnected', () => {
+  console.log('🔴 Pusher: отключён');
+});
+
+pusher.connection.bind('error', (err) => {
+  console.error('❌ Ошибка Pusher:', err);
+});
+
+
 
 // ==========================
 
