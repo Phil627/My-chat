@@ -3,7 +3,8 @@ const pusher = new Pusher('373931c2b8d081fd1db7', {
   cluster: 'eu'
 });
 
-const channel = pusher.subscribe('presence-chat-channel');
+const channel = pusher.subscribe('public-chat');
+
 // ==========================
 
 // Получаем элементы
